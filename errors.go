@@ -7,6 +7,7 @@ var (
 	ErrIsNil            = errors.New("struct is nil")
 	ErrFieldNotPointer  = errors.New("field is not pointer")
 	ErrFindField        = errors.New("can't find field")
+	ErrMissValidate     = errors.New("miss Validate func")
 )
 
 // Error when a rule is broken.

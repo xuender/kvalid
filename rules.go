@@ -3,6 +3,8 @@ package kvalid
 import (
 	"reflect"
 	"strings"
+
+	"github.com/xuender/kvalid/json"
 )
 
 // Rules for creating a chain of rules for validating a struct.
@@ -20,33 +22,33 @@ func New[T any](structPtr T) *Rules[T] {
 }
 
 // Field adds validators for a field.
-func (r *Rules[T]) Field(fieldPtr any, validators ...Validator) *Rules[T] {
+func (p *Rules[T]) Field(fieldPtr any, validators ...Validator) *Rules[T] {
 	for _, validator := range validators {
-		validator.SetName(r.getFieldName(fieldPtr))
-		r.validators = append(r.validators, validator)
+		validator.SetName(p.getFieldName(fieldPtr))
+		p.validators = append(p.validators, validator)
 	}
 
-	return r
+	return p
 }
 
 // Struct adds validators for the struct.
-func (r *Rules[T]) Struct(validators ...Validator) *Rules[T] {
-	r.validators = append(r.validators, validators...)
+func (p *Rules[T]) Struct(validators ...Validator) *Rules[T] {
+	p.validators = append(p.validators, validators...)
 
-	return r
+	return p
 }
 
 // Validate a struct and return Errors.
-func (r *Rules[T]) Validate(subject T) error {
+func (p *Rules[T]) Validate(subject any) error {
 	errs := make(Errors, 0)
-	vmap := r.structToMap(subject)
+	vmap := p.structToMap(subject)
 
-	for _, validator := range r.validators {
+	for _, validator := range p.validators {
 		var err Error
 		if validator.Name() == "" {
-			err = validator.Validate(subject)
+			err = call(validator, subject)
 		} else {
-			err = validator.Validate(vmap[validator.Name()])
+			err = call(validator, vmap[validator.Name()])
 		}
 
 		if err != nil {
@@ -61,27 +63,74 @@ func (r *Rules[T]) Validate(subject T) error {
 	return nil
 }
 
+func call(valid Validator, value any) Error {
+	method := reflect.ValueOf(valid).MethodByName("Validate")
+
+	if !method.IsValid() {
+		panic(ErrMissValidate)
+	}
+
+	var (
+		val = reflect.ValueOf(value)
+		ret = method.Call([]reflect.Value{val})
+	)
+
+	if length := len(ret); length > 0 {
+		if ret[length-1].IsNil() {
+			return nil
+		}
+
+		if err, ok := ret[length-1].Interface().(Error); ok {
+			return err
+		}
+
+		panic(ErrMissValidate)
+	}
+
+	return nil
+}
+
 // OnlyFor filters the validators to match only the fields.
-func (r *Rules[T]) OnlyFor(name string) *Rules[T] {
-	validators := r.validators
-	r.validators = make([]Validator, 0)
+func (p *Rules[T]) OnlyFor(name string) *Rules[T] {
+	validators := p.validators
+	p.validators = make([]Validator, 0)
 
 	for _, val := range validators {
 		if val.Name() == name {
-			r.validators = append(r.validators, val)
+			p.validators = append(p.validators, val)
 		}
 	}
 
-	return r
+	return p
 }
 
 // Validators for this chain.
-func (r *Rules[T]) Validators() []Validator {
-	return r.validators
+func (p *Rules[T]) Validators() []Validator {
+	return p.validators
+}
+
+func (p *Rules[T]) MarshalJSON() ([]byte, error) {
+	htmls := map[string][]Validator{}
+
+	for _, val := range p.validators {
+		if !val.HTMLCompatible() {
+			continue
+		}
+
+		rules, has := htmls[val.Name()]
+		if !has {
+			rules = []Validator{}
+		}
+
+		rules = append(rules, val)
+		htmls[val.Name()] = rules
+	}
+
+	return json.Marshal(htmls)
 }
 
 // structToMap converts struct to map and uses the json name if available.
-func (r *Rules[T]) structToMap(structPtr T) map[string]any {
+func (p *Rules[T]) structToMap(structPtr any) map[string]any {
 	vmap := make(map[string]any)
 	structValue := reflect.ValueOf(structPtr)
 
@@ -110,8 +159,8 @@ func (r *Rules[T]) structToMap(structPtr T) map[string]any {
 	return vmap
 }
 
-func (r *Rules[T]) getFieldName(fieldPtr any) string {
-	value := reflect.ValueOf(r.structPtr)
+func (p *Rules[T]) getFieldName(fieldPtr any) string {
+	value := reflect.ValueOf(p.structPtr)
 	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
 		panic(ErrStructNotPointer)
 	}

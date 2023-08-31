@@ -6,5 +6,4 @@ type Validator interface {
 	Name() string
 	HTMLCompatible() bool
 	SetMessage(string) Validator
-	Validate(any) Error
 }

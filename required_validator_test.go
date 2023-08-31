@@ -64,10 +64,9 @@ func TestRequired(t *testing.T) {
 		Field(&req.Ptr, kvalid.Required()).
 		Validate(req)
 	assert.Nil(t, errs, "All value are set")
-
-	msg := "custom message"
-	ass.Equal(msg, kvalid.New(req).Field(&req.Number, kvalid.Required().SetMessage(msg)).
+	// message
+	ass.Equal(_msg, kvalid.New(req).Field(&req.Number, kvalid.Required().SetMessage(_msg)).
 		Validate(&requiredType{}).(kvalid.Errors)[0].Error(), "Custom error message")
-	ass.NotEqual(msg, kvalid.New(req).Field(&req.Number, kvalid.Required()).
+	ass.NotEqual(_msg, kvalid.New(req).Field(&req.Number, kvalid.Required()).
 		Validate(&requiredType{}).(kvalid.Errors)[0].Error(), "Default error message")
 }
