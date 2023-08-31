@@ -1,6 +1,9 @@
 package kvalid
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 var (
 	ErrStructNotPointer = errors.New("struct is not pointer")
@@ -60,17 +63,7 @@ func joinSentences(list []string) string {
 		return ""
 	}
 
-	final := list[0]
-
-	for i := 1; i < length; i++ {
-		if i == length-1 {
-			final = final + list[i] + "."
-		} else {
-			final = final + list[i] + ". "
-		}
-	}
-
-	return final
+	return strings.Join(list, ". ") + "."
 }
 
 func createError(name, custom, fallback string) Error {
