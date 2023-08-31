@@ -9,6 +9,8 @@ kvalid is a lightweight validation library that can export rules as JSON so brow
 
 Support Go 1.18 and later.
 
+Learn from [github.com/AgentCosmic/xvalid](https://github.com/AgentCosmic/xvalid) .
+
 ## Use
 
 Define rules and validate objects and export rules as JSON:
@@ -63,6 +65,20 @@ fmt.Println(book.Validate(http.MethodPost))
 data, _ := json.Marshal(book.Validation(http.MethodPut))
 fmt.Println(string(data))
 ```
+
+## Validators
+
+* Email
+* MaxNum, MinNum
+  * int, int8, int16, int32, int64
+  * uint, uint8, uint16, uint32, uint64
+  * float32, float64
+  * byte, rune
+* MaxStr, MinStr
+* MaxNullInt, MinNullInt
+* Pattern
+* Required
+* FieldFunc, StructFunc
 
 ## License
 
