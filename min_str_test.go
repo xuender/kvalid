@@ -7,6 +7,8 @@ import (
 	"github.com/xuender/kvalid"
 )
 
+const _msg = "custom message"
+
 type strType struct {
 	Field string
 }
@@ -23,11 +25,10 @@ func TestMinStr(t *testing.T) {
 	ass.Nil(rules.Validate(&strType{Field: "12"}), "Exactly hit min")
 	ass.Len(rules.Validate(&strType{Field: "1"}).(kvalid.Errors), 1, "Too short")
 	ass.Len(rules.Validate(&strType{Field: "£"}).(kvalid.Errors), 1, "Multi-byte characters too short")
-
-	msg := "custom message"
-	ass.Equal(msg, kvalid.New(str).Field(&str.Field, kvalid.MinStr(2).SetMessage(msg)).
+	// message
+	ass.Equal(_msg, kvalid.New(str).Field(&str.Field, kvalid.MinStr(2).SetMessage(_msg)).
 		Validate(&strType{Field: "1"}).(kvalid.Errors)[0].Error(), "Custom error message")
-	ass.NotEqual(msg, kvalid.New(str).Field(&str.Field, kvalid.MinStr(2)).
+	ass.NotEqual(_msg, kvalid.New(str).Field(&str.Field, kvalid.MinStr(2)).
 		Validate(&strType{Field: "1"}).(kvalid.Errors)[0].Error(), "Default error message")
 	// optional
 	rules = kvalid.New(str).Field(&str.Field, kvalid.MinStr(3).Optional())
