@@ -67,17 +67,26 @@ func ExampleRules_Validate() {
 }
 
 func ExampleRules_Bind() {
-	source := &Book{Title: "Hello World"}
+	source := &Book{Title: "Hello World", Amount: 100}
 	target := &Book{}
-	rules := source.Validation(http.MethodPost)
+	postRules := source.Validation(http.MethodPost)
+	putRules := source.Validation(http.MethodPut)
 
-	fmt.Println(rules.Bind(source, target))
+	fmt.Println(postRules.Bind(source, target))
+
 	source.Author = "ender"
-	fmt.Println(rules.Bind(source, target))
+	fmt.Println(postRules.Bind(source, target))
 	fmt.Println(target.Title)
+	fmt.Println(target.Amount)
+
+	fmt.Println(putRules.Bind(source, target))
+	fmt.Println(target.Amount)
 
 	// Output:
 	// author required.
 	// <nil>
 	// Hello World
+	// 0
+	// <nil>
+	// 100
 }

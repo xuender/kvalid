@@ -1,7 +1,3 @@
-PACKAGE = github.com/xuender/valid
-VERSION = $(shell git describe --tags)
-BUILD_TIME = $(shell date +%F' '%T)
-
 default: lint test
 
 tools:
@@ -18,16 +14,4 @@ test:
 	go test -race -v ./... -gcflags=all=-l -cover
 
 watch-test:
-	reflex -t 50ms -s -- sh -c 'gotest -race -v ./...'
-
-clean:
-	rm -rf dist
-
-proto:
-	protoc --go_out=. pb/*.proto
-
-build:
-	go build \
-	-ldflags "-X 'github.com/xuender/kit/oss.Version=${VERSION}' \
-  -X 'github.com/xuender/kit/oss.BuildTime=${BUILD_TIME}'" \
-  -o dist/valid main.go
+	reflex -t 50ms -s -- sh -c 'go test -race -v ./...'
