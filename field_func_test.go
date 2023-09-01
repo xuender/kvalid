@@ -26,5 +26,8 @@ func TestFieldFunc(t *testing.T) {
 	data := &funcTest{}
 	rules := kvalid.New(data).Field(&data.Field, kvalid.FieldFunc(checker))
 	ass.Nil(rules.Validate(&funcTest{Field: "valid"}), "Valid")
-	ass.Len(rules.Validate(&funcTest{Field: "invalid"}).(kvalid.Errors), 1, "Invalid")
+
+	errs := rules.Validate(&funcTest{Field: "invalid"}).(kvalid.Errors)
+	ass.Len(errs, 1, "Invalid")
+	ass.Equal("Field", errs[0].Field())
 }

@@ -60,7 +60,14 @@ func TestMarshalJSON(t *testing.T) {
 
 	ass := assert.New(t)
 	str := &strType{}
-	rules := kvalid.New(str).Field(&str.Field, kvalid.MinStr(2))
+	rules := kvalid.New(str).
+		Field(&str.Field, kvalid.MinStr(2)).
+		Field(&str.Field, kvalid.FieldFunc(func(field, value string) kvalid.Error {
+			return nil
+		})).
+		Field(&str.Field, kvalid.StructFunc(func(value string) kvalid.Error {
+			return nil
+		}))
 	data, _ := json.Marshal(rules)
 
 	ass.Equal(string(data), `{"Field":[{"rule":"minStr","min":2}]}`)
