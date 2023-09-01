@@ -7,3 +7,8 @@ type Validator interface {
 	HTMLCompatible() bool
 	SetMessage(string) Validator
 }
+
+type RuleHolder[T any] interface {
+	Validation(string) *Rules[T]
+	Validate(string) error
+}
