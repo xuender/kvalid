@@ -26,13 +26,13 @@ type validationError struct {
 }
 
 // Error message.
-func (v validationError) Error() string {
-	return v.Message
+func (p validationError) Error() string {
+	return p.Message
 }
 
 // Field name.
-func (v validationError) Field() string {
-	return v.FieldName
+func (p validationError) Field() string {
+	return p.FieldName
 }
 
 // NewError creates new validation error.
@@ -47,10 +47,10 @@ func NewError(message, fieldName string) Error {
 type Errors []Error
 
 // Error will combine all errors into a list of sentences.
-func (v Errors) Error() string {
-	list := make([]string, len(v))
-	for i := range v {
-		list[i] = v[i].Error()
+func (p Errors) Error() string {
+	list := make([]string, len(p))
+	for i := range p {
+		list[i] = p[i].Error()
 	}
 
 	return joinSentences(list)
@@ -58,11 +58,6 @@ func (v Errors) Error() string {
 
 // joinSentences converts a list of strings to a paragraph.
 func joinSentences(list []string) string {
-	length := len(list)
-	if length == 0 {
-		return ""
-	}
-
 	return strings.Join(list, ". ") + "."
 }
 

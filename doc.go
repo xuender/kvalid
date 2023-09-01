@@ -1,2 +1,2 @@
-// Package kvalid is lightweight validation library, support Go 1.18 and later.
+// Package kvalid is lightweight validation library, based on Go 1.18+ Generics.
 package kvalid
