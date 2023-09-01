@@ -5,13 +5,13 @@
 [![godoc][godoc-svg]][godoc-url]
 [![License][license-svg]][license-url]
 
-kvalid is a lightweight validation library that can export rules as JSON so browsers can apply the same rules.
+✨ **`xuender/kvalid` is a lightweight validation library that can export rules as JSON so browsers can apply the same rules.**
 
-Support Go 1.18 and later.
+Based on Go 1.18+ Generics.
 
 Learn from [github.com/AgentCosmic/xvalid](https://github.com/AgentCosmic/xvalid) .
 
-## Use
+## 💡 Usage
 
 Define rules:
 
@@ -60,7 +60,7 @@ func (p *Book) Validate(method string) error {
 }
 ```
 
-Validate objects:
+Validate object:
 
 ```go
 book := &Book{}
@@ -98,11 +98,15 @@ rules.Bind(source, target)
 * Required
 * FieldFunc, StructFunc
 
-## License
+## 👤 Contributors
+
+![Contributors][contributors-svg]
+
+## 📝 License
 
 © ender, 2023~time.Now
 
-[MIT LICENSE](https://github.com/xuender/kvalid/blob/master/LICENSE)
+[MIT LICENSE][license-url]
 
 [action-url]: https://github.com/xuender/kvalid/actions
 [action-svg]: https://github.com/xuender/kvalid/workflows/Go/badge.svg
@@ -115,3 +119,5 @@ rules.Bind(source, target)
 
 [license-url]: https://github.com/xuender/kvalid/blob/master/LICENSE
 [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
+
+[contributors-svg]: https://contrib.rocks/image?repo=xuender/kvalid
