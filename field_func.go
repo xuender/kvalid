@@ -3,7 +3,6 @@ package kvalid
 // FieldFuncValidator for validating with custom function.
 type FieldFuncValidator[T any] struct {
 	name    string
-	message string
 	checker func(string, T) Error
 }
 
@@ -18,9 +17,7 @@ func (p *FieldFuncValidator[T]) SetName(name string) {
 }
 
 // SetMessage set error message.
-func (p *FieldFuncValidator[T]) SetMessage(msg string) Validator {
-	p.message = msg
-
+func (p *FieldFuncValidator[T]) SetMessage(_ string) Validator {
 	return p
 }
 

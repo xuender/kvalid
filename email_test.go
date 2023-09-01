@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/xuender/kvalid"
+	"github.com/xuender/kvalid/json"
 )
 
 type emailType struct {
@@ -29,4 +30,14 @@ func TestEmail(t *testing.T) {
 	ass.Nil(rules.Validate(&emailType{Field: ""}), "Invalid but zero")
 	ass.Len(rules.Validate(&emailType{Field: "fake"}).(kvalid.Errors), 1, "Invalid and not zero")
 	ass.Nil(rules.Validate(&emailType{Field: "test@mail.com"}), "Valid and not zero")
+}
+
+func TestEmailValidator_MarshalJSON(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	email := kvalid.Email()
+	data, _ := json.Marshal(email)
+
+	ass.Equal(`{"rule":"email","msg":"Please use a valid email address"}`, string(data), "email Marshal")
 }
