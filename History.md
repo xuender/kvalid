@@ -1,4 +1,16 @@
 
+1.0.2 / 2023-09-01
+==================
+
+* feat: add RuleHolder
+* chore: github
+* test: 95.7%
+* test: 93.6%
+* doc: Graphs
+* chore: github
+* doc: readme
+* test: putRules
+
 1.0.1 / 2023-09-01
 ==================
 
