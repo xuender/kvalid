@@ -15,7 +15,7 @@ type Book struct {
 }
 
 // nolint: gomnd
-func (p *Book) Validation(method string) *kvalid.Rules {
+func (p *Book) Validation(method string) *kvalid.Rules[*Book] {
 	switch method {
 	case http.MethodPut:
 		return kvalid.New(p).
@@ -64,4 +64,20 @@ func ExampleRules_Validate() {
 	// <nil>
 	// amount required.
 	// {"Amount":[{"rule":"required","msg":"amount required"},{"rule":"minNum","min":10.3,"msg":"amount min 10.3"},{"rule":"maxNum","max":2000,"msg":"amount max 2000"}]}
+}
+
+func ExampleRules_Bind() {
+	source := &Book{Title: "Hello World"}
+	target := &Book{}
+	rules := source.Validation(http.MethodPost)
+
+	fmt.Println(rules.Bind(source, target))
+	source.Author = "ender"
+	fmt.Println(rules.Bind(source, target))
+	fmt.Println(target.Title)
+
+	// Output:
+	// author required.
+	// <nil>
+	// Hello World
 }

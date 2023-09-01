@@ -13,7 +13,7 @@ Learn from [github.com/AgentCosmic/xvalid](https://github.com/AgentCosmic/xvalid
 
 ## Use
 
-Define rules and validate objects and export rules as JSON:
+Define rules:
 
 ```go
 import (
@@ -31,7 +31,7 @@ type Book struct {
 }
 
 // nolint: gomnd
-func (p *Book) Validation(method string) *kvalid.Rules {
+func (p *Book) Validation(method string) *kvalid.Rules[*Book] {
   switch method {
   case http.MethodPut:
     return kvalid.New(p).
@@ -58,12 +58,30 @@ func (p *Book) Validation(method string) *kvalid.Rules {
 func (p *Book) Validate(method string) error {
   return p.Validation(method).Validate(p)
 }
+```
 
+Validate objects:
+
+```go
 book := &Book{}
 fmt.Println(book.Validate(http.MethodPost))
+```
 
+Export rules as JSON:
+
+```go
 data, _ := json.Marshal(book.Validation(http.MethodPut))
 fmt.Println(string(data))
+```
+
+Bind object:
+
+```go
+source := &Book{Title: "Hello World", Author: "ender"}
+target := &Book{}
+rules := source.Validation(http.MethodPost)
+
+rules.Bind(source, target)
 ```
 
 ## Validators

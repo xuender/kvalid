@@ -36,7 +36,7 @@ func (c *compareValidator) HTMLCompatible() bool {
 	return true
 }
 
-func (c *compareValidator) Validate(value structSubject) kvalid.Error {
+func (c *compareValidator) Validate(value *structSubject) kvalid.Error {
 	if value.Less > value.More {
 		return kvalid.NewError("comparison failed", "")
 	}
@@ -51,8 +51,8 @@ func TestRules_Struct(t *testing.T) {
 	ass := assert.New(t)
 	sub := &structSubject{}
 	rules := kvalid.New(sub).Struct(&compareValidator{})
-	ass.Nil(rules.Validate(structSubject{Less: 1, More: 2}), "Valid")
-	ass.Len(rules.Validate(structSubject{Less: 2, More: 1}).(kvalid.Errors), 1, "Invalid")
+	ass.Nil(rules.Validate(&structSubject{Less: 1, More: 2}), "Valid")
+	ass.Len(rules.Validate(&structSubject{Less: 2, More: 1}).(kvalid.Errors), 1, "Invalid")
 }
 
 func TestMarshalJSON(t *testing.T) {
