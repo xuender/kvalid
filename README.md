@@ -85,7 +85,7 @@ rules := source.Validation(http.MethodPost)
 rules.Bind(source, target)
 ```
 
-## Validators
+## 🔍️ Validators
 
 * Email
 * MaxNum, MinNum
