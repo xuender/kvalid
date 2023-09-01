@@ -70,3 +70,16 @@ func TestMarshalJSON(t *testing.T) {
 
 	ass.Equal(string(data), `{"Field":[{"rule":"minStr","min":2,"msg":"length minimum 2"}]}`)
 }
+
+func TestRules_OnlyFor(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	req := &requiredType{}
+	rules := kvalid.New(req).
+		Field(&req.String, kvalid.MinStr(2)).
+		Field(&req.Time, kvalid.Required())
+
+	ass.Len(rules.Validators(), 2)
+	ass.Len(rules.OnlyFor("string").Validators(), 1)
+}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/xuender/kvalid"
+	"github.com/xuender/kvalid/json"
 )
 
 type patternType struct {
@@ -31,4 +32,15 @@ func TestPattern(t *testing.T) {
 	ass.Nil(rules.Validate(&patternType{Field: ""}), "Invalid but zero")
 	ass.Len(rules.Validate(&patternType{Field: " "}).(kvalid.Errors), 1, "Invalid and not zero")
 	ass.Nil(rules.Validate(&patternType{Field: "123"}), "Valid and not zero")
+}
+
+func TestPatternValidator_MarshalJSON(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	pattern := &patternType{}
+	rules := kvalid.New(pattern).Field(&pattern.Field, kvalid.Pattern(`\d{2}`).SetMessage(_msg))
+	data, _ := json.Marshal(rules)
+
+	ass.Equal(`{"Field":[{"rule":"pattern","pattern":"\\d{2}","msg":"custom message"}]}`, string(data), "MarshalJSON")
 }

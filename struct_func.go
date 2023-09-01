@@ -3,7 +3,6 @@ package kvalid
 // StructFuncValidator validate struct with custom function.
 type StructFuncValidator[T any] struct {
 	name    string
-	message string
 	checker func(T) Error
 }
 
@@ -18,9 +17,7 @@ func (c *StructFuncValidator[T]) SetName(name string) {
 }
 
 // SetMessage set error message.
-func (c *StructFuncValidator[T]) SetMessage(msg string) Validator {
-	c.message = msg
-
+func (c *StructFuncValidator[T]) SetMessage(_ string) Validator {
 	return c
 }
 

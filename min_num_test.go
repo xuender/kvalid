@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/xuender/kvalid"
+	"github.com/xuender/kvalid/json"
 	"gopkg.in/guregu/null.v3"
 )
 
@@ -47,4 +48,17 @@ func TestMinNum(t *testing.T) {
 	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(0)}), "Invalid but zero")
 	ass.Len(rules.Validate(&intType{Null: null.IntFrom(1)}).(kvalid.Errors), 1, "Invalid and not zero")
 	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(5)}), "Valid and not zero")
+}
+
+func TestMinNum_MarshalJSON(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	num := &intType{}
+	rules := kvalid.New(num).
+		Field(&num.Null, kvalid.MinNullInt(0)).
+		Field(&num.Null, kvalid.MaxNullInt(100))
+	data, _ := json.Marshal(rules)
+
+	ass.Equal(`{"Null":[{"rule":"minNum"},{"rule":"maxNum","max":100}]}`, string(data), "MarshalJSON")
 }
