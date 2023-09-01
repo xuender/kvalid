@@ -21,6 +21,6 @@ func TestStructFunc(t *testing.T) {
 	}
 	data := &funcTest{}
 	rules := kvalid.New(data).Field(&data.Field, kvalid.StructFunc(checker))
-	ass.Nil(rules.Validate(funcTest{Field: "valid"}), "Valid")
-	ass.Len(rules.Validate(funcTest{Field: "invalid"}).(kvalid.Errors), 1, "Invalid")
+	ass.Nil(rules.Validate(&funcTest{Field: "valid"}), "Valid")
+	ass.Len(rules.Validate(&funcTest{Field: "invalid"}).(kvalid.Errors), 1, "Invalid")
 }

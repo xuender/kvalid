@@ -8,21 +8,21 @@ import (
 )
 
 // Rules for creating a chain of rules for validating a struct.
-type Rules struct {
+type Rules[T any] struct {
 	validators []Validator
-	structPtr  any
+	structPtr  T
 }
 
 // New rule chain.
-func New(structPtr any) *Rules {
-	return &Rules{
+func New[T any](structPtr T) *Rules[T] {
+	return &Rules[T]{
 		structPtr:  structPtr,
 		validators: make([]Validator, 0),
 	}
 }
 
 // Field adds validators for a field.
-func (p *Rules) Field(fieldPtr any, validators ...Validator) *Rules {
+func (p *Rules[T]) Field(fieldPtr any, validators ...Validator) *Rules[T] {
 	for _, validator := range validators {
 		validator.SetName(p.getFieldName(fieldPtr))
 		p.validators = append(p.validators, validator)
@@ -32,14 +32,14 @@ func (p *Rules) Field(fieldPtr any, validators ...Validator) *Rules {
 }
 
 // Struct adds validators for the struct.
-func (p *Rules) Struct(validators ...Validator) *Rules {
+func (p *Rules[T]) Struct(validators ...Validator) *Rules[T] {
 	p.validators = append(p.validators, validators...)
 
 	return p
 }
 
 // Validate a struct and return Errors.
-func (p *Rules) Validate(subject any) error {
+func (p *Rules[T]) Validate(subject T) error {
 	errs := make(Errors, 0)
 	vmap := p.structToMap(subject)
 
@@ -61,6 +61,55 @@ func (p *Rules) Validate(subject any) error {
 	}
 
 	return nil
+}
+
+func (p *Rules[T]) Bind(source, target T) error {
+	if err := p.Validate(source); err != nil {
+		return err
+	}
+
+	var (
+		sourceVal = reflect.ValueOf(source)
+		targetVal = reflect.ValueOf(target)
+	)
+
+	if sourceVal.Kind() == reflect.Ptr {
+		sourceVal = sourceVal.Elem()
+	}
+
+	if targetVal.Kind() == reflect.Ptr {
+		targetVal = targetVal.Elem()
+	}
+
+	for _, index := range p.getFieldIndex(source) {
+		targetVal.Field(index).Set(sourceVal.Field(index))
+	}
+
+	return nil
+}
+
+func (p *Rules[T]) getFieldIndex(elem T) []int {
+	typ := reflect.TypeOf(elem)
+
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
+
+	names := map[string]struct{}{}
+	for _, vali := range p.validators {
+		names[vali.Name()] = struct{}{}
+	}
+
+	ret := []int{}
+
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		if _, has := names[fieldName(&field)]; has {
+			ret = append(ret, i)
+		}
+	}
+
+	return ret
 }
 
 func call(valid Validator, value any) Error {
@@ -91,7 +140,7 @@ func call(valid Validator, value any) Error {
 }
 
 // OnlyFor filters the validators to match only the fields.
-func (p *Rules) OnlyFor(name string) *Rules {
+func (p *Rules[T]) OnlyFor(name string) *Rules[T] {
 	validators := p.validators
 	p.validators = make([]Validator, 0)
 
@@ -105,11 +154,11 @@ func (p *Rules) OnlyFor(name string) *Rules {
 }
 
 // Validators for this chain.
-func (p *Rules) Validators() []Validator {
+func (p *Rules[T]) Validators() []Validator {
 	return p.validators
 }
 
-func (p *Rules) MarshalJSON() ([]byte, error) {
+func (p *Rules[T]) MarshalJSON() ([]byte, error) {
 	htmls := map[string][]Validator{}
 
 	for _, val := range p.validators {
@@ -130,7 +179,7 @@ func (p *Rules) MarshalJSON() ([]byte, error) {
 }
 
 // structToMap converts struct to map and uses the json name if available.
-func (p *Rules) structToMap(structPtr any) map[string]any {
+func (p *Rules[T]) structToMap(structPtr any) map[string]any {
 	vmap := make(map[string]any)
 	structValue := reflect.ValueOf(structPtr)
 
@@ -140,15 +189,7 @@ func (p *Rules) structToMap(structPtr any) map[string]any {
 
 	for index := structValue.NumField() - 1; index >= 0; index-- {
 		sf := structValue.Type().Field(index)
-		name := sf.Tag.Get("json")
-
-		if name == "" {
-			name = sf.Name
-		}
-
-		if index := strings.Index(name, ","); index > 0 {
-			name = name[:index]
-		}
+		name := fieldName(&sf)
 
 		f := structValue.Field(index)
 		if f.CanInterface() {
@@ -159,7 +200,7 @@ func (p *Rules) structToMap(structPtr any) map[string]any {
 	return vmap
 }
 
-func (p *Rules) getFieldName(fieldPtr any) string {
+func (p *Rules[T]) getFieldName(fieldPtr any) string {
 	value := reflect.ValueOf(p.structPtr)
 	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
 		panic(ErrStructNotPointer)
@@ -181,16 +222,20 @@ func (p *Rules) getFieldName(fieldPtr any) string {
 		panic(ErrFindField)
 	}
 
-	tag := fsf.Tag.Get("json")
-	if tag == "" {
-		tag = fsf.Name
+	return fieldName(fsf)
+}
+
+func fieldName(fsf *reflect.StructField) string {
+	name := fsf.Tag.Get("json")
+	if name == "" {
+		name = fsf.Name
 	}
 
-	if index := strings.Index(tag, ","); index > 0 {
-		tag = tag[:index]
+	if index := strings.Index(name, ","); index > 0 {
+		name = name[:index]
 	}
 
-	return tag
+	return name
 }
 
 // findStructField looks for a field in the given struct.
