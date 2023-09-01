@@ -2,6 +2,7 @@
 
 [![Action][action-svg]][action-url]
 [![Report Card][goreport-svg]][goreport-url]
+[![codecov][codecov-svg]][codecov-url]
 [![godoc][godoc-svg]][godoc-url]
 [![License][license-svg]][license-url]
 
@@ -98,6 +99,10 @@ rules.Bind(source, target)
 * Required
 * FieldFunc, StructFunc
 
+## 📊 Graphs
+
+![Graphs][graphs-svg]
+
 ## 👤 Contributors
 
 ![Contributors][contributors-svg]
@@ -121,3 +126,7 @@ rules.Bind(source, target)
 [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
 
 [contributors-svg]: https://contrib.rocks/image?repo=xuender/kvalid
+
+[codecov-url]: https://codecov.io/gh/xuender/kvalid
+[codecov-svg]: https://codecov.io/gh/xuender/kvalid/graph/badge.svg?token=HYNXZQ5OZ7
+[graphs-svg]: https://codecov.io/gh/xuender/kvalid/graphs/tree.svg?token=HYNXZQ5OZ7
