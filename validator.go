@@ -8,7 +8,7 @@ type Validator interface {
 	SetMessage(string) Validator
 }
 
-type RuleHolder[T any] interface {
-	Validation(string) *Rules[T]
+type RuleHolder interface {
+	Validation(string) *Rules
 	Validate(string) error
 }

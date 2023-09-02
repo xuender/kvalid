@@ -15,7 +15,7 @@ type Book struct {
 }
 
 // nolint: gomnd
-func (p *Book) Validation(method string) *kvalid.Rules[*Book] {
+func (p *Book) Validation(method string) *kvalid.Rules {
 	switch method {
 	case http.MethodPut:
 		return kvalid.New(p).
