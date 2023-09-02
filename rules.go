@@ -10,13 +10,22 @@ import (
 // Rules for creating a chain of rules for validating a struct.
 type Rules struct {
 	validators []Validator
-	structPtr  any
+	value      reflect.Value
 }
 
 // New rule chain.
 func New(structPtr any) *Rules {
+	value := reflect.ValueOf(structPtr)
+	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
+		panic(ErrStructNotPointer)
+	}
+
+	if value.IsNil() {
+		panic(ErrIsNil)
+	}
+
 	return &Rules{
-		structPtr:  structPtr,
+		value:      value.Elem(),
 		validators: make([]Validator, 0),
 	}
 }
@@ -40,8 +49,10 @@ func (p *Rules) Struct(validators ...Validator) *Rules {
 
 // Validate a struct and return Errors.
 func (p *Rules) Validate(subject any) error {
-	errs := make(Errors, 0)
-	vmap := p.structToMap(subject)
+	var (
+		errs = make(Errors, 0)
+		vmap = p.structToMap(subject)
+	)
 
 	for _, validator := range p.validators {
 		var err Error
@@ -69,47 +80,48 @@ func (p *Rules) Bind(source, target any) error {
 	}
 
 	var (
-		sourceVal = reflect.ValueOf(source)
-		targetVal = reflect.ValueOf(target)
+		sVal = reflect.ValueOf(source)
+		tVal = reflect.ValueOf(target)
 	)
 
-	if sourceVal.Kind() == reflect.Ptr {
-		sourceVal = sourceVal.Elem()
+	if sVal.Kind() == reflect.Ptr {
+		sVal = sVal.Elem()
 	}
 
-	if targetVal.Kind() == reflect.Ptr {
-		targetVal = targetVal.Elem()
+	if tVal.Kind() == reflect.Ptr {
+		tVal = tVal.Elem()
 	}
 
-	for _, index := range p.getFieldIndex(source) {
-		targetVal.Field(index).Set(sourceVal.Field(index))
+	for _, index := range p.getFieldIndexes(source) {
+		tVal.Field(index).Set(sVal.Field(index))
 	}
 
 	return nil
 }
 
-func (p *Rules) getFieldIndex(elem any) []int {
-	typ := reflect.TypeOf(elem)
+func (p *Rules) getFieldIndexes(elem any) []int {
+	var (
+		typ     = reflect.TypeOf(elem)
+		names   = map[string]struct{}{}
+		indexes = []int{}
+	)
 
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 	}
 
-	names := map[string]struct{}{}
 	for _, vali := range p.validators {
 		names[vali.Name()] = struct{}{}
 	}
 
-	ret := []int{}
-
-	for i := 0; i < typ.NumField(); i++ {
-		field := typ.Field(i)
+	for index := 0; index < typ.NumField(); index++ {
+		field := typ.Field(index)
 		if _, has := names[fieldName(&field)]; has {
-			ret = append(ret, i)
+			indexes = append(indexes, index)
 		}
 	}
 
-	return ret
+	return indexes
 }
 
 func call(valid Validator, value any) Error {
@@ -180,20 +192,22 @@ func (p *Rules) MarshalJSON() ([]byte, error) {
 
 // structToMap converts struct to map and uses the json name if available.
 func (p *Rules) structToMap(structPtr any) map[string]any {
-	vmap := make(map[string]any)
-	structValue := reflect.ValueOf(structPtr)
+	var (
+		vmap  = make(map[string]any)
+		value = reflect.ValueOf(structPtr)
+	)
 
-	if structValue.Kind() == reflect.Ptr {
-		structValue = structValue.Elem()
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
 	}
 
-	for index := structValue.NumField() - 1; index >= 0; index-- {
-		sf := structValue.Type().Field(index)
-		name := fieldName(&sf)
+	for index := value.NumField() - 1; index >= 0; index-- {
+		typeField := value.Type().Field(index)
+		name := fieldName(&typeField)
 
-		f := structValue.Field(index)
-		if f.CanInterface() {
-			vmap[name] = f.Interface()
+		field := value.Field(index)
+		if field.CanInterface() {
+			vmap[name] = field.Interface()
 		}
 	}
 
@@ -201,28 +215,17 @@ func (p *Rules) structToMap(structPtr any) map[string]any {
 }
 
 func (p *Rules) getFieldName(fieldPtr any) string {
-	value := reflect.ValueOf(p.structPtr)
-	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
-		panic(ErrStructNotPointer)
-	}
-
-	if value.IsNil() {
-		panic(ErrIsNil)
-	}
-
-	value = value.Elem()
-
-	fval := reflect.ValueOf(fieldPtr)
-	if fval.Kind() != reflect.Ptr {
+	value := reflect.ValueOf(fieldPtr)
+	if value.Kind() != reflect.Ptr {
 		panic(ErrFieldNotPointer)
 	}
 
-	fsf := findStructField(value, fval)
-	if fsf == nil {
+	field := p.findStructField(value)
+	if field == nil {
 		panic(ErrFindField)
 	}
 
-	return fieldName(fsf)
+	return fieldName(field)
 }
 
 func fieldName(fsf *reflect.StructField) string {
@@ -241,16 +244,16 @@ func fieldName(fsf *reflect.StructField) string {
 // findStructField looks for a field in the given struct.
 // The field being looked for should be a pointer to the actual struct field.
 // If found, the field info will be returned. Otherwise, nil will be returned.
-func findStructField(structValue reflect.Value, fieldValue reflect.Value) *reflect.StructField {
+func (p *Rules) findStructField(fieldValue reflect.Value) *reflect.StructField {
 	ptr := fieldValue.Pointer()
 
-	for i := structValue.NumField() - 1; i >= 0; i-- {
-		sf := structValue.Type().Field(i)
-		if ptr == structValue.Field(i).UnsafeAddr() {
+	for index := p.value.NumField() - 1; index >= 0; index-- {
+		field := p.value.Type().Field(index)
+		if ptr == p.value.Field(index).UnsafeAddr() {
 			// do additional type comparison because it's possible that the address of
 			// an embedded struct is the same as the first field of the embedded struct
-			if sf.Type == fieldValue.Elem().Type() {
-				return &sf
+			if field.Type == fieldValue.Elem().Type() {
+				return &field
 			}
 		}
 	}

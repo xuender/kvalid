@@ -8,6 +8,7 @@ type Validator interface {
 	SetMessage(string) Validator
 }
 
+// RuleHolder needs to be verified.
 type RuleHolder interface {
 	Validation(string) *Rules
 	Validate(string) error
