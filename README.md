@@ -29,6 +29,7 @@ type Book struct {
   Title  string `json:"title"`
   Author string `json:"author,omitempty"`
   Amount float64
+  Num    int
 }
 
 // nolint: gomnd
@@ -40,7 +41,8 @@ func (p *Book) Validation(method string) *kvalid.Rules[*Book] {
         kvalid.Required().SetMessage("amount required"),
         kvalid.MinNum(10.3).Optional().SetMessage("amount min 10.3"),
         kvalid.MaxNum(2000.0).SetMessage("amount max 2000"),
-      )
+      ).
+      Field(&p.Num, kvalid.Ignore())
   case http.MethodPost:
     return kvalid.New(p).
       Field(&p.Title,
@@ -78,9 +80,9 @@ fmt.Println(string(data))
 Bind object:
 
 ```go
-source := &Book{Title: "Hello World", Author: "ender"}
+source := &Book{Amount: 99.9, Num: 3}
 target := &Book{}
-rules := source.Validation(http.MethodPost)
+rules := source.Validation(http.MethodPut)
 
 rules.Bind(source, target)
 ```
@@ -97,7 +99,7 @@ rules.Bind(source, target)
 * MaxNullInt, MinNullInt
 * Pattern
 * Required
-* FieldFunc, StructFunc
+* FieldFunc, StructFunc, Ignore
 
 ## 📊 Graphs
 
