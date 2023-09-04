@@ -1,5 +1,7 @@
 package kvalid
 
+import "encoding/json"
+
 // Validator to implement a rule.
 type Validator interface {
 	SetName(string)
@@ -8,8 +10,13 @@ type Validator interface {
 	SetMessage(string) Validator
 }
 
-// RuleHolder needs to be verified.
-type RuleHolder interface {
-	Validation(string) *Rules
+// RuleHolder needs to be Rules.
+type RuleHolder[T any] interface {
+	Validation(string) *Rules[T]
 	Validate(string) error
+}
+
+// ValidJSONer to implement a Validator JSON map.
+type ValidJSONer interface {
+	ValidJSON() map[string]json.Marshaler
 }
