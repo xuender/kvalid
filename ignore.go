@@ -1,6 +1,6 @@
 package kvalid
 
-// IgnoreValidator field not check.
+// IgnoreValidator only for bind.
 type IgnoreValidator struct {
 	name string
 }
@@ -28,7 +28,7 @@ func (p *IgnoreValidator) HTMLCompatible() bool {
 	return false
 }
 
-// Ignore fields not check.
+// Ignore only for bind.
 func Ignore() *IgnoreValidator {
 	return &IgnoreValidator{}
 }
