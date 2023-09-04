@@ -20,7 +20,7 @@ func TestStructFunc(t *testing.T) {
 		return nil
 	}
 	data := &funcTest{}
-	rules := kvalid.New(data).Field(&data.Field, kvalid.StructFunc(checker))
+	rules := kvalid.New(data).Field(&data.Field, kvalid.StructFunc(checker).SetMessage(_msg))
 	ass.Nil(rules.Validate(&funcTest{Field: "valid"}), "Valid")
 	ass.Len(rules.Validate(&funcTest{Field: "invalid"}).(kvalid.Errors), 1, "Invalid")
 }

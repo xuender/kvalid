@@ -24,7 +24,7 @@ func TestFieldFunc(t *testing.T) {
 		return nil
 	}
 	data := &funcTest{}
-	rules := kvalid.New(data).Field(&data.Field, kvalid.FieldFunc(checker))
+	rules := kvalid.New(data).Field(&data.Field, kvalid.FieldFunc(checker).SetMessage(_msg))
 	ass.Nil(rules.Validate(&funcTest{Field: "valid"}), "Valid")
 
 	errs := rules.Validate(&funcTest{Field: "invalid"}).(kvalid.Errors)

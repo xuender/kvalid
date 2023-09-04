@@ -1,6 +1,7 @@
 package kvalid_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -89,4 +90,64 @@ func TestRules_OnlyFor(t *testing.T) {
 
 	ass.Len(rules.Validators(), 2)
 	ass.Len(rules.OnlyFor("string").Validators(), 1)
+}
+
+func TestNew(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+
+	ass.Panics(func() {
+		kvalid.New(Book{})
+	})
+
+	ass.Panics(func() {
+		var book *Book
+		kvalid.New(book)
+	})
+}
+
+func TestRules_Field(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	book := &Book{}
+
+	ass.Panics(func() {
+		kvalid.New(book).Field(book, kvalid.Required())
+	})
+
+	ass.Panics(func() {
+		kvalid.New(book).Field(book.Title, kvalid.Required())
+	})
+}
+
+type (
+	bedValidator  struct{ name string }
+	bed2Validator struct{ bedValidator }
+	bed3Validator struct{ bedValidator }
+)
+
+func (p *bedValidator) SetName(name string)                { p.name = name }
+func (p *bedValidator) Name() string                       { return p.name }
+func (p *bedValidator) HTMLCompatible() bool               { return false }
+func (p *bedValidator) SetMessage(string) kvalid.Validator { return p }
+
+func (p *bed2Validator) Validate(_ string) error { return os.ErrClosed }
+func (p *bed3Validator) Validate(_ string)       {}
+
+func TestRules_Validate(t *testing.T) {
+	t.Parallel()
+
+	ass := assert.New(t)
+	book := &Book{}
+
+	ass.Panics(func() {
+		_ = kvalid.New(book).Field(&book.Title, &bedValidator{}).Validate(book)
+	})
+	ass.Panics(func() {
+		_ = kvalid.New(book).Field(&book.Title, &bed2Validator{}).Validate(book)
+	})
+
+	_ = kvalid.New(book).Field(&book.Title, &bed3Validator{}).Validate(book)
 }
