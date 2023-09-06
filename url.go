@@ -9,8 +9,9 @@ const (
 	_schema = `((ftp|tcp|udp|wss?|https?):\/\/)`
 	_user   = `(\S+(:\S*)?@)?`
 	_domain = `(\w+([-_.]?\w)*\w\.\w+)`
+	_port   = `(:(\d{1,5}))?`
 	_path   = `((\/|\?|#)\S*)*`
-	_url    = `^` + _schema + _user + _domain + _path + `$`
+	_url    = `^` + _schema + _user + _domain + _port + _path + `$`
 )
 
 var _urlRegex = regexp.MustCompile(_url)
