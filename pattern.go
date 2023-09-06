@@ -1,10 +1,9 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // PatternValidator field must match regexp.

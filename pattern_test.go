@@ -1,11 +1,11 @@
 package kvalid_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/xuender/kvalid"
-	"github.com/xuender/kvalid/json"
 )
 
 type patternType struct {

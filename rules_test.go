@@ -1,12 +1,12 @@
 package kvalid_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/xuender/kvalid"
-	"github.com/xuender/kvalid/json"
 )
 
 type structSubject struct {

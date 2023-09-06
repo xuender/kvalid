@@ -1,9 +1,8 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // MaxNumValidator field have maximum value.

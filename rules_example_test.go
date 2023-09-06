@@ -1,11 +1,11 @@
 package kvalid_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/xuender/kvalid"
-	"github.com/xuender/kvalid/json"
 )
 
 type Book struct {
