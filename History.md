@@ -1,4 +1,12 @@
 
+1.0.6 / 2023-09-06
+==================
+
+* chore: v1.0.6
+* refactor: remove non system JSON Marshaler
+* doc: Ignore
+* refactor: move jsonStruct
+
 1.0.5 / 2023-09-04
 ==================
 
