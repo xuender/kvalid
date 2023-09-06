@@ -1,9 +1,8 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"regexp"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // EmailValidator field must be a valid email address.

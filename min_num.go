@@ -1,9 +1,8 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // MinNumValidator field have minimum value.

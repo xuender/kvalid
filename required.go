@@ -1,10 +1,9 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // RequiredValidator field must not be zero.

@@ -1,10 +1,9 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
-
-	"github.com/xuender/kvalid/json"
 )
 
 // Rules for creating a chain of rules for validating a struct.

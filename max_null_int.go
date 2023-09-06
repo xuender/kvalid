@@ -1,9 +1,9 @@
 package kvalid
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/xuender/kvalid/json"
 	"gopkg.in/guregu/null.v3"
 )
 
