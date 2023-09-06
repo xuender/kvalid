@@ -89,7 +89,6 @@ rules.Bind(source, target)
 
 ## 🔍️ Validators
 
-* Email
 * MaxNum, MinNum
   * int, int8, int16, int32, int64
   * uint, uint8, uint16, uint32, uint64
@@ -97,8 +96,9 @@ rules.Bind(source, target)
   * byte, rune
 * MaxStr, MinStr
 * MaxNullInt, MinNullInt
-* Pattern
 * Required
+* Pattern
+* Email, URL
 * FieldFunc, StructFunc, Ignore
 
 ## 📊 Graphs
