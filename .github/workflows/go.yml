@@ -36,15 +36,3 @@ jobs:
           env_vars: OS,GOLANG
           name: codecov-umbrell
           fail_ci_if_error: false
-      - name: Get lines of code (more sophisticated)
-        id: scc
-        uses: iryanbell/scc-docker-action@v1.0.2
-        with:
-          args: ${{ env.workspace }} -i go --format json
-      - name: Make lines of code badge
-        uses: emibcn/badge-action@v2.0.2
-        with:
-          label: Lines of Code
-          status: ${{ fromJson(steps.scc.outputs.scc)[0].Code }}
-          color: "blue"
-          path: .github/lines.svg

@@ -3,7 +3,7 @@
 [![Action][action-svg]][action-url]
 [![Report Card][goreport-svg]][goreport-url]
 [![Codecov][codecov-svg]][codecov-url]
-[![Lines of code][lines-svg]][lines-svg]
+[![Lines of code][lines-svg]][lines-url]
 [![Godoc][godoc-svg]][godoc-url]
 [![License][license-svg]][license-url]
 
@@ -134,4 +134,5 @@ rules.Bind(source, target)
 [codecov-svg]: https://codecov.io/gh/xuender/kvalid/graph/badge.svg?token=HYNXZQ5OZ7
 [graphs-svg]: https://codecov.io/gh/xuender/kvalid/graphs/tree.svg?token=HYNXZQ5OZ7
 
-[lines-svg]: https://raw.githubusercontent.com/xuender/kvalid/image-data/lines.svg
+[lines-svg]: https://sloc.xyz/github/xuender/kvalid
+[lines-url]: https://github.com/boyter/scc
