@@ -2,8 +2,9 @@
 
 [![Action][action-svg]][action-url]
 [![Report Card][goreport-svg]][goreport-url]
-[![codecov][codecov-svg]][codecov-url]
-[![godoc][godoc-svg]][godoc-url]
+[![Codecov][codecov-svg]][codecov-url]
+[![Lines of code][lines-svg]][lines-svg]
+[![Godoc][godoc-svg]][godoc-url]
 [![License][license-svg]][license-url]
 
 ✨ **`xuender/kvalid` is a lightweight validation library that can export rules as JSON so browsers can apply the same rules.**
@@ -132,3 +133,5 @@ rules.Bind(source, target)
 [codecov-url]: https://codecov.io/gh/xuender/kvalid
 [codecov-svg]: https://codecov.io/gh/xuender/kvalid/graph/badge.svg?token=HYNXZQ5OZ7
 [graphs-svg]: https://codecov.io/gh/xuender/kvalid/graphs/tree.svg?token=HYNXZQ5OZ7
+
+[lines-svg]: https://raw.githubusercontent.com/xuender/kvalid/image-data/lines.svg
