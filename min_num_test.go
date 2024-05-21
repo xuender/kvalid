@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/xuender/kvalid"
 	"gopkg.in/guregu/null.v3"
 )
@@ -19,10 +20,11 @@ func TestMinNum(t *testing.T) {
 	t.Parallel()
 
 	ass := assert.New(t)
+	req := require.New(t)
 	data := &intType{}
 	rules := kvalid.New(data).Field(&data.Field, kvalid.MinNum(0))
-	ass.Nil(rules.Validate(&intType{Field: 1}), "Big enough")
-	ass.Nil(rules.Validate(&intType{Field: 0}), "Exactly hit min")
+	req.NoError(rules.Validate(&intType{Field: 1}), "Big enough")
+	req.NoError(rules.Validate(&intType{Field: 0}), "Exactly hit min")
 	ass.Len(rules.Validate(&intType{Field: -1}).(kvalid.Errors), 1, "Too low")
 	// message
 	ass.Equal(_msg, kvalid.New(data).Field(&data.Field, kvalid.MinNum(0).SetMessage(_msg)).
@@ -31,13 +33,13 @@ func TestMinNum(t *testing.T) {
 		Validate(&intType{Field: -1}).(kvalid.Errors)[0].Error(), "Default error message")
 	// optional
 	rules = kvalid.New(data).Field(&data.Field, kvalid.MinNum(5).Optional())
-	ass.Nil(rules.Validate(&intType{Field: 0}), "Invalid but zero")
+	req.NoError(rules.Validate(&intType{Field: 0}), "Invalid but zero")
 	ass.Len(rules.Validate(&intType{Field: 1}).(kvalid.Errors), 1, "Invalid and not zero")
-	ass.Nil(rules.Validate(&intType{Field: 5}), "Valid and not zero")
+	req.NoError(rules.Validate(&intType{Field: 5}), "Valid and not zero")
 	// null
 	rules = kvalid.New(data).Field(&data.Null, kvalid.MinNullInt(0))
-	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(1)}), "Big enough")
-	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(0)}), "Exactly hit min")
+	req.NoError(rules.Validate(&intType{Null: null.IntFrom(1)}), "Big enough")
+	req.NoError(rules.Validate(&intType{Null: null.IntFrom(0)}), "Exactly hit min")
 	ass.Len(rules.Validate(&intType{Null: null.IntFrom(-1)}).(kvalid.Errors), 1, "Too low")
 	ass.Equal(_msg, kvalid.New(data).Field(&data.Null, kvalid.MinNullInt(0).SetMessage(_msg)).
 		Validate(&intType{Null: null.IntFrom(-1)}).(kvalid.Errors)[0].Error(), "Custom error message")
@@ -45,9 +47,9 @@ func TestMinNum(t *testing.T) {
 		Validate(&intType{Null: null.IntFrom(-1)}).(kvalid.Errors)[0].Error(), "Default error message")
 	// optional
 	rules = kvalid.New(data).Field(&data.Null, kvalid.MinNullInt(5).Optional())
-	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(0)}), "Invalid but zero")
+	req.NoError(rules.Validate(&intType{Null: null.IntFrom(0)}), "Invalid but zero")
 	ass.Len(rules.Validate(&intType{Null: null.IntFrom(1)}).(kvalid.Errors), 1, "Invalid and not zero")
-	ass.Nil(rules.Validate(&intType{Null: null.IntFrom(5)}), "Valid and not zero")
+	req.NoError(rules.Validate(&intType{Null: null.IntFrom(5)}), "Valid and not zero")
 }
 
 func TestMinNum_MarshalJSON(t *testing.T) {

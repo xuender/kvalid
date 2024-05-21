@@ -5,16 +5,16 @@ import "encoding/json"
 
 // Validator to implement a rule.
 type Validator interface {
-	SetName(string)
+	SetName(name string)
 	Name() string
 	HTMLCompatible() bool
-	SetMessage(string) Validator
+	SetMessage(message string) Validator
 }
 
 // RuleHolder needs to be Rules.
 type RuleHolder[T any] interface {
-	Validation(string) *Rules[T]
-	Validate(string) error
+	Validation(rule string) *Rules[T]
+	Validate(val string) error
 }
 
 // ValidJSONer to implement a Validator JSON map.
