@@ -36,6 +36,16 @@ func TestPattern(t *testing.T) {
 	req.NoError(rules.Validate(&patternType{Field: "123"}), "Valid and not zero")
 }
 
+func TestPattern_int(t *testing.T) {
+	t.Parallel()
+
+	req := require.New(t)
+	data := &intType{}
+	rules := kvalid.New(data).Field(&data.Field, kvalid.Pattern(`\d{2}`))
+	req.NoError(rules.Validate(&intType{Field: 12}), "Exact match")
+	req.Error(rules.Validate(&intType{Field: 3}), &kvalid.Errors{}, "Pattern is wrong")
+}
+
 func TestPatternValidator_MarshalJSON(t *testing.T) {
 	t.Parallel()
 
