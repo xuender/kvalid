@@ -39,12 +39,13 @@ func (p *PatternValidator) Optional() Validator {
 }
 
 // Validate the value.
-func (p *PatternValidator) Validate(value string) Error {
-	if p.optional && value == "" {
+func (p *PatternValidator) Validate(value any) Error {
+	val := toString(value)
+	if p.optional && val == "" {
 		return nil
 	}
 
-	if p.re.MatchString(value) {
+	if p.re.MatchString(val) {
 		return nil
 	}
 
@@ -65,19 +66,20 @@ func (p *PatternValidator) HTMLCompatible() bool {
 	return true
 }
 
-// Pattern field must match regexp.
-func Pattern(pattern any) *PatternValidator {
-	str := ""
+func toString(pattern any) string {
 	switch val := pattern.(type) {
 	case string:
-		str = val
+		return val
 	case fmt.Stringer:
-		str = val.String()
+		return val.String()
 	default:
-		str = fmt.Sprintf("%v", val)
+		return fmt.Sprintf("%v", val)
 	}
+}
 
+// Pattern field must match regexp.
+func Pattern(pattern any) *PatternValidator {
 	return &PatternValidator{
-		re: regexp.MustCompile(str),
+		re: regexp.MustCompile(toString(pattern)),
 	}
 }
