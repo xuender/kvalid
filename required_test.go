@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/xuender/kvalid"
 	"gopkg.in/guregu/null.v3"
 )
@@ -22,6 +23,7 @@ func TestRequired(t *testing.T) {
 	t.Parallel()
 
 	ass := assert.New(t)
+	requ := require.New(t)
 	req := &requiredType{}
 	errs := kvalid.New(req).
 		Field(&req.Number, kvalid.Required()).
@@ -31,7 +33,7 @@ func TestRequired(t *testing.T) {
 		Field(&req.Ptr, kvalid.Required()).
 		Validate(req)
 
-	ass.ErrorAs(errs, &kvalid.Errors{})
+	requ.ErrorAs(errs, &kvalid.Errors{})
 	ass.Len(errs.(kvalid.Errors), 5, "All not set")
 
 	str := ""
@@ -63,7 +65,7 @@ func TestRequired(t *testing.T) {
 		Field(&req.Null, kvalid.Required()).
 		Field(&req.Ptr, kvalid.Required()).
 		Validate(req)
-	assert.Nil(t, errs, "All value are set")
+	requ.NoError(errs, "All value are set")
 	// message
 	ass.Equal(_msg, kvalid.New(req).Field(&req.Number, kvalid.Required().SetMessage(_msg)).
 		Validate(&requiredType{}).(kvalid.Errors)[0].Error(), "Custom error message")

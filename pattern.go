@@ -66,8 +66,18 @@ func (p *PatternValidator) HTMLCompatible() bool {
 }
 
 // Pattern field must match regexp.
-func Pattern(pattern string) *PatternValidator {
+func Pattern(pattern any) *PatternValidator {
+	str := ""
+	switch val := pattern.(type) {
+	case string:
+		str = val
+	case fmt.Stringer:
+		str = val.String()
+	default:
+		str = fmt.Sprintf("%v", val)
+	}
+
 	return &PatternValidator{
-		re: regexp.MustCompile(pattern),
+		re: regexp.MustCompile(str),
 	}
 }

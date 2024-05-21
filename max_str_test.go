@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/xuender/kvalid"
 )
 
@@ -13,12 +14,13 @@ func TestMaxStr(t *testing.T) {
 	t.Parallel()
 
 	ass := assert.New(t)
+	req := require.New(t)
 	str := &strType{}
 	rules := kvalid.New(str).Field(&str.Field, kvalid.MaxStr(2))
 	ass.Len(rules.Validate(&strType{Field: "123"}).(kvalid.Errors), 1, "Short enough")
-	ass.Nil(rules.Validate(&strType{Field: "12"}), "Exactly hit max")
-	ass.Nil(rules.Validate(&strType{Field: "1"}), "Short enough")
-	ass.Nil(rules.Validate(&strType{Field: "世界"}), "Multi-byte characters are short enough")
+	req.NoError(rules.Validate(&strType{Field: "12"}), "Exactly hit max")
+	req.NoError(rules.Validate(&strType{Field: "1"}), "Short enough")
+	req.NoError(rules.Validate(&strType{Field: "世界"}), "Multi-byte characters are short enough")
 	// message
 	ass.Equal(_msg, kvalid.New(str).Field(&str.Field, kvalid.MaxStr(0).SetMessage(_msg)).
 		Validate(&strType{Field: "1"}).(kvalid.Errors)[0].Error(), "Custom error message")

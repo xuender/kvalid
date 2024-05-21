@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/xuender/kvalid"
 )
 
@@ -50,9 +51,10 @@ func TestRules_Struct(t *testing.T) {
 	t.Parallel()
 
 	ass := assert.New(t)
+	req := require.New(t)
 	sub := &structSubject{}
 	rules := kvalid.New(sub).Struct(&compareValidator{})
-	ass.Nil(rules.Validate(&structSubject{Less: 1, More: 2}), "Valid")
+	req.NoError(rules.Validate(&structSubject{Less: 1, More: 2}), "Valid")
 	ass.Len(rules.Validate(&structSubject{Less: 2, More: 1}).(kvalid.Errors), 1, "Invalid")
 }
 
@@ -71,12 +73,12 @@ func TestMarshalJSON(t *testing.T) {
 		}))
 	data, _ := json.Marshal(rules)
 
-	ass.Equal(string(data), `{"Field":[{"rule":"minStr","min":2}]}`)
+	ass.Equal(`{"Field":[{"rule":"minStr","min":2}]}`, string(data))
 
 	rules = kvalid.New(str).Field(&str.Field, kvalid.MinStr(2).SetMessage("length minimum 2"))
 	data, _ = json.Marshal(rules)
 
-	ass.Equal(string(data), `{"Field":[{"rule":"minStr","min":2,"msg":"length minimum 2"}]}`)
+	ass.Equal(`{"Field":[{"rule":"minStr","min":2,"msg":"length minimum 2"}]}`, string(data))
 }
 
 func TestRules_OnlyFor(t *testing.T) {
@@ -103,6 +105,7 @@ func TestNew(t *testing.T) {
 
 	ass.Panics(func() {
 		var book *Book
+
 		kvalid.New(book)
 	})
 }
