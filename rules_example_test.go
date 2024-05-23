@@ -9,10 +9,11 @@ import (
 )
 
 type Book struct {
-	Title  string `json:"title"`
-	Author string `json:"author,omitempty"`
-	Amount float64
-	Num    int
+	Title   string `json:"title"`
+	Author  string `json:"author,omitempty"`
+	Amount  float64
+	Num     int
+	Enabled bool
 }
 
 // nolint: gomnd
@@ -25,6 +26,7 @@ func (p *Book) Validation(method string) *kvalid.Rules[*Book] {
 				kvalid.MinNum(10.3).Optional().SetMessage("amount min 10.3"),
 				kvalid.MaxNum(2000.0).SetMessage("amount max 2000"),
 			).
+			Field(&p.Enabled, kvalid.Ignore()).
 			Field(&p.Num, kvalid.Ignore())
 	case http.MethodPost:
 		return kvalid.New(p).
@@ -69,7 +71,7 @@ func ExampleRules_Validate() {
 }
 
 func ExampleRules_Bind() {
-	source := &Book{Title: "Hello World", Amount: 99.9, Num: 3}
+	source := &Book{Title: "Hello World", Amount: 99.9, Num: 3, Enabled: true}
 	target := &Book{}
 	postRules := source.Validation(http.MethodPost)
 	putRules := source.Validation(http.MethodPut)
@@ -84,6 +86,7 @@ func ExampleRules_Bind() {
 	fmt.Println(putRules.Bind(source, target))
 	fmt.Println(target.Amount)
 	fmt.Println(target.Num)
+	fmt.Println(target.Enabled)
 
 	// Output:
 	// author required.
@@ -93,4 +96,5 @@ func ExampleRules_Bind() {
 	// <nil>
 	// 99.9
 	// 3
+	// true
 }
