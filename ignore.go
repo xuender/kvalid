@@ -1,5 +1,7 @@
 package kvalid
 
+import "encoding/json"
+
 // IgnoreValidator only for bind.
 type IgnoreValidator struct {
 	name string
@@ -22,6 +24,10 @@ func (p *IgnoreValidator) SetMessage(_ string) Validator {
 
 // Validate the value.
 func (p *IgnoreValidator) Validate(_ any) {}
+
+func (p *IgnoreValidator) MarshalJSON() ([]byte, error) {
+	return json.Marshal(jsonStruct[int]{Rule: "ignore"})
+}
 
 // HTMLCompatible for this validator.
 func (p *IgnoreValidator) HTMLCompatible() bool {
