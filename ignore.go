@@ -4,7 +4,8 @@ import "encoding/json"
 
 // IgnoreValidator only for bind.
 type IgnoreValidator struct {
-	name string
+	name    string
+	message string
 }
 
 // Name of the field.
@@ -18,7 +19,9 @@ func (p *IgnoreValidator) SetName(name string) {
 }
 
 // SetMessage set error message.
-func (p *IgnoreValidator) SetMessage(_ string) Validator {
+func (p *IgnoreValidator) SetMessage(message string) Validator {
+	p.message = message
+
 	return p
 }
 
@@ -26,12 +29,15 @@ func (p *IgnoreValidator) SetMessage(_ string) Validator {
 func (p *IgnoreValidator) Validate(_ any) {}
 
 func (p *IgnoreValidator) MarshalJSON() ([]byte, error) {
-	return json.Marshal(jsonStruct[int]{Rule: "ignore"})
+	return json.Marshal(jsonStruct[int]{
+		Rule: "ignore",
+		Msg:  p.message,
+	})
 }
 
 // HTMLCompatible for this validator.
 func (p *IgnoreValidator) HTMLCompatible() bool {
-	return false
+	return true
 }
 
 // Ignore only for bind.
