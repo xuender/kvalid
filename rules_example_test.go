@@ -67,7 +67,7 @@ func ExampleRules_Validate() {
 	// author required.
 	// <nil>
 	// amount required.
-	// {"Amount":[{"rule":"required","msg":"amount required"},{"rule":"minNum","min":10.3,"msg":"amount min 10.3"},{"rule":"maxNum","max":2000,"msg":"amount max 2000"}]}
+	// {"Amount":[{"rule":"required","msg":"amount required"},{"rule":"minNum","min":10.3,"msg":"amount min 10.3"},{"rule":"maxNum","max":2000,"msg":"amount max 2000"}],"Enabled":[{"rule":"ignore"}],"Num":[{"rule":"ignore"}]}
 }
 
 func ExampleRules_Bind() {

@@ -19,5 +19,5 @@ func TestIgnore(t *testing.T) {
 	req.NoError(rules.Validate(str), "Valid")
 
 	data, _ := json.Marshal(rules)
-	ass.Equal(`{}`, string(data))
+	ass.Equal(`{"Field":[{"rule":"ignore","msg":"custom message"}]}`, string(data))
 }
